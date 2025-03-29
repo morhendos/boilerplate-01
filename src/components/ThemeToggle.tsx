@@ -1,0 +1,1 @@
+// Component removed as part of dark mode standardization
