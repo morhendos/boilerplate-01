@@ -1,0 +1,203 @@
+subscription-tracker/
+├── README.md
+├── docs
+├── next-env.d.ts
+├── next.config.js
+├── package.json
+├── postcss.config.js
+├── public
+├── scripts
+│   └── tree.js
+├── src
+│   ├── app
+│   │   ├── actions.ts
+│   │   ├── api
+│   │   │   ├── auth
+│   │   │   │   └── [...nextauth]
+│   │   │   │       └── route.ts
+│   │   │   ├── auth-debug
+│   │   │   │   └── route.ts
+│   │   │   ├── check-environment
+│   │   │   │   └── route.ts
+│   │   │   ├── health
+│   │   │   │   └── db
+│   │   │   │       ├── __tests__
+│   │   │   │       │   └── route.test.ts
+│   │   │   │       └── route.ts
+│   │   │   ├── healthz
+│   │   │   │   └── route.ts
+│   │   │   ├── storage
+│   │   │   │   └── route.ts
+│   │   │   ├── subscriptions
+│   │   │   │   ├── [id]
+│   │   │   │   │   └── route.ts
+│   │   │   │   └── route.ts
+│   │   │   ├── test-db
+│   │   │   │   └── route.ts
+│   │   │   ├── test-db-alt
+│   │   │   │   └── route.ts
+│   │   │   ├── test-db-simple
+│   │   │   │   └── route.ts
+│   │   │   └── test-user-creation
+│   │   │       └── route.ts
+│   │   ├── auth
+│   │   │   ├── error
+│   │   │   │   ├── loading.tsx
+│   │   │   │   └── page.tsx
+│   │   │   └── signout
+│   │   │       └── page.tsx
+│   │   ├── auth-actions.ts
+│   │   ├── auth-debug
+│   │   │   ├── README.md
+│   │   │   ├── create-test-user
+│   │   │   │   └── route.ts
+│   │   │   └── page.tsx
+│   │   ├── auth-diagnostic.ts
+│   │   ├── globals.css
+│   │   ├── layout.tsx
+│   │   ├── login
+│   │   │   └── page.tsx
+│   │   ├── page.tsx
+│   │   ├── providers.tsx
+│   │   ├── signup
+│   │   │   └── page.tsx
+│   │   └── subscriptions
+│   │       ├── error.tsx
+│   │       ├── layout.tsx
+│   │       ├── loading.tsx
+│   │       └── page.tsx
+│   ├── components
+│   │   ├── GradientBackground.tsx
+│   │   ├── ThemeToggle.tsx
+│   │   ├── auth
+│   │   │   ├── AuthLogo.tsx
+│   │   │   ├── AuthProvider.tsx
+│   │   │   ├── AuthenticatingSpinner.tsx
+│   │   │   ├── LogoutButton.tsx
+│   │   │   └── withAuth.tsx
+│   │   ├── common
+│   │   │   └── Section.tsx
+│   │   ├── error
+│   │   │   └── DatabaseErrorBoundary.tsx
+│   │   ├── error-boundary.tsx
+│   │   ├── layout
+│   │   │   └── PageHeader.tsx
+│   │   ├── loading.tsx
+│   │   ├── settings
+│   │   │   └── HeaderControls.tsx
+│   │   ├── subscriptions
+│   │   │   ├── AddSubscriptionButton.tsx
+│   │   │   ├── AddSubscriptionSheet.tsx
+│   │   │   ├── DeleteSubscriptionDialog.tsx
+│   │   │   ├── EditSubscriptionSheet.tsx
+│   │   │   ├── SubscriptionDashboard.tsx
+│   │   │   ├── SubscriptionForm.tsx
+│   │   │   ├── SubscriptionList.tsx
+│   │   │   ├── SubscriptionSummary.tsx
+│   │   │   └── TestStorageConnection.tsx
+│   │   └── ui
+│   │       ├── IconButton.tsx
+│   │       ├── button.tsx
+│   │       ├── card.tsx
+│   │       ├── input.tsx
+│   │       ├── label.tsx
+│   │       ├── sheet.tsx
+│   │       ├── toast.tsx
+│   │       ├── toaster.tsx
+│   │       └── use-toast.ts
+│   ├── config
+│   │   ├── database-config.ts
+│   │   └── database.ts
+│   ├── contexts
+│   │   └── DateContext.tsx
+│   ├── hooks
+│   │   ├── useLocalStorage.ts
+│   │   └── useTheme.ts
+│   ├── lib
+│   │   ├── auth
+│   │   │   ├── auth-options.ts
+│   │   │   ├── auth-service.ts
+│   │   │   ├── config.ts
+│   │   │   ├── index.ts
+│   │   │   └── validation.ts
+│   │   ├── db
+│   │   │   ├── ERROR_HANDLING.md
+│   │   │   ├── __tests__
+│   │   │   │   ├── atlas-config.test.ts
+│   │   │   │   ├── atlas-integration.test.ts
+│   │   │   │   ├── connection-manager.test.ts
+│   │   │   │   └── mongodb.test.ts
+│   │   │   ├── atlas-config.ts
+│   │   │   ├── auth-connection.ts
+│   │   │   ├── check-env.ts
+│   │   │   ├── config.ts
+│   │   │   ├── connection-fix.ts
+│   │   │   ├── connection-manager.ts
+│   │   │   ├── env-debug.ts
+│   │   │   ├── error-handler.ts
+│   │   │   ├── index.ts
+│   │   │   ├── mock-connection.ts
+│   │   │   ├── mongodb.ts
+│   │   │   ├── operations.ts
+│   │   │   ├── simplified-connection.ts
+│   │   │   ├── test-connection.ts
+│   │   │   ├── test.ts
+│   │   │   └── unified-error-handler.ts
+│   │   ├── monitoring
+│   │   │   └── index.ts
+│   │   ├── services
+│   │   │   ├── SERVICE_PATTERN.md
+│   │   │   ├── __tests__
+│   │   │   │   └── subscription-service.test.ts
+│   │   │   ├── auth-debug-service.ts
+│   │   │   ├── health-service.ts
+│   │   │   ├── storage-service.ts
+│   │   │   └── subscription-service.ts
+│   │   ├── storage
+│   │   │   ├── __tests__
+│   │   │   │   └── mongodb.test.ts
+│   │   │   ├── index.ts
+│   │   │   ├── localStorage.ts
+│   │   │   ├── mongodb.ts
+│   │   │   ├── server.ts
+│   │   │   └── types.ts
+│   │   ├── subscriptions
+│   │   │   ├── config
+│   │   │   │   ├── currencies.ts
+│   │   │   │   └── periods.ts
+│   │   │   ├── hooks
+│   │   │   │   ├── useSubscriptionCalculations.ts
+│   │   │   │   └── useSubscriptionStorage.ts
+│   │   │   ├── index.ts
+│   │   │   └── utils
+│   │   │       ├── calculations.ts
+│   │   │       ├── currency.ts
+│   │   │       ├── dates.ts
+│   │   │       └── periods.ts
+│   │   ├── utils.ts
+│   │   └── validations
+│   │       └── subscription.ts
+│   ├── middleware
+│   │   ├── __tests__
+│   │   │   └── rate-limit.test.ts
+│   │   └── rate-limit.ts
+│   ├── middleware.ts
+│   ├── models
+│   │   ├── __tests__
+│   │   │   ├── subscription.test.ts
+│   │   │   └── user.test.ts
+│   │   ├── subscription.ts
+│   │   └── user.ts
+│   ├── types
+│   │   ├── auth.ts
+│   │   ├── next-auth.d.ts
+│   │   ├── subscription.ts
+│   │   ├── subscriptions.ts
+│   │   └── user.ts
+│   └── utils
+│       ├── dates.ts
+│       ├── format.ts
+│       ├── mongodb-uri.ts
+│       └── mongodb-utils.ts
+├── tailwind.config.js
+└── tsconfig.json
