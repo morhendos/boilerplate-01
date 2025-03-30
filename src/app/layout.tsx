@@ -9,8 +9,8 @@ import GradientBackground from '@/components/GradientBackground';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Subscription Tracker',
-  description: 'Track your subscriptions and recurring payments',
+  title: 'SaaS Boilerplate',
+  description: 'A streamlined SaaS application boilerplate',
 };
 
 export default async function RootLayout({
