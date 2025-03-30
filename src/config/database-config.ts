@@ -320,7 +320,7 @@ export function loadMongoDBConfig(): MongoDBConfig {
   const requiredConfig = {
     // URI - required
     uri: process.env.MONGODB_URI || '',
-    databaseName: process.env.MONGODB_DATABASE || 'subscriptions',
+    databaseName: process.env.MONGODB_DATABASE || 'saas-app',
     
     // These always get default settings if not specified elsewhere
     maxRetries: parseInt(process.env.MONGODB_MAX_RETRIES || '5'), // Increased from 3 to 5
