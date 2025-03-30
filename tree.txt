@@ -1,12 +1,14 @@
-saas-boilerplate/
-├── .env.example
-├── .gitignore
+subscription-tracker/
 ├── CLEANUP.md
 ├── README.md
+├── docs
 ├── next-env.d.ts
 ├── next.config.js
+├── package-lock.json
 ├── package.json
 ├── postcss.config.js
+├── public
+│   └── logo-placeholder-image.png
 ├── scripts
 │   └── tree.js
 ├── src
@@ -16,8 +18,12 @@ saas-boilerplate/
 │   │   │   ├── auth
 │   │   │   │   └── [...nextauth]
 │   │   │   │       └── route.ts
+│   │   │   ├── check-environment
+│   │   │   │   └── route.ts
 │   │   │   ├── health
 │   │   │   │   └── db
+│   │   │   │       ├── __tests__
+│   │   │   │       │   └── route.test.ts
 │   │   │   │       └── route.ts
 │   │   │   └── healthz
 │   │   │       └── route.ts
@@ -28,6 +34,7 @@ saas-boilerplate/
 │   │   │   └── signout
 │   │   │       └── page.tsx
 │   │   ├── auth-actions.ts
+│   │   ├── auth-diagnostic.ts
 │   │   ├── dashboard
 │   │   │   └── page.tsx
 │   │   ├── globals.css
@@ -70,6 +77,11 @@ saas-boilerplate/
 │   ├── config
 │   │   ├── database-config.ts
 │   │   └── database.ts
+│   ├── contexts
+│   │   └── DateContext.tsx
+│   ├── hooks
+│   │   ├── useLocalStorage.ts
+│   │   └── useTheme.ts
 │   ├── lib
 │   │   ├── auth
 │   │   │   ├── auth-options.ts
@@ -78,26 +90,48 @@ saas-boilerplate/
 │   │   │   ├── index.ts
 │   │   │   └── validation.ts
 │   │   ├── db
+│   │   │   ├── ERROR_HANDLING.md
 │   │   │   ├── atlas-config.ts
 │   │   │   ├── auth-connection.ts
 │   │   │   ├── check-env.ts
 │   │   │   ├── config.ts
+│   │   │   ├── connection-fix.ts
 │   │   │   ├── connection-manager.ts
+│   │   │   ├── env-debug.ts
+│   │   │   ├── error-handler.ts
 │   │   │   ├── index.ts
+│   │   │   ├── mock-connection.ts
 │   │   │   ├── mongodb.ts
-│   │   │   └── test-connection.ts
+│   │   │   ├── operations.ts
+│   │   │   ├── simplified-connection.ts
+│   │   │   ├── test-connection.ts
+│   │   │   ├── test.ts
+│   │   │   └── unified-error-handler.ts
 │   │   ├── monitoring
 │   │   │   └── index.ts
+│   │   ├── services
+│   │   │   ├── SERVICE_PATTERN.md
+│   │   │   ├── auth-debug-service.ts
+│   │   │   ├── health-service.ts
+│   │   │   ├── storage-service.ts
+│   │   │   └── subscription-service.ts
 │   │   └── utils.ts
+│   ├── middleware
+│   │   └── rate-limit.ts
 │   ├── middleware.ts
 │   ├── models
+│   │   ├── __tests__
+│   │   │   └── user.test.ts
 │   │   └── user.ts
 │   ├── types
 │   │   ├── auth.ts
 │   │   ├── next-auth.d.ts
 │   │   └── user.ts
 │   └── utils
+│       ├── dates.ts
+│       ├── format.ts
 │       ├── mongodb-uri.ts
 │       └── mongodb-utils.ts
 ├── tailwind.config.js
+├── tree.txt
 └── tsconfig.json
