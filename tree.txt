@@ -1,5 +1,4 @@
 subscription-tracker/
-├── CLEANUP.md
 ├── README.md
 ├── docs
 ├── next-env.d.ts
