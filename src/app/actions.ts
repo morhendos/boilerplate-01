@@ -56,13 +56,10 @@ export async function authenticateUser(
   try {
     console.log(`[Auth] Attempting login for user: ${email}`);
     
+    // Use simplified connection (no options parameter)
     const user = await withConnection(async () => {
-      // Extended timeout for authentication
+      // Extended timeout is handled internally by the simplified connection
       return UserModel.findOne({ email: email.toLowerCase() });
-    }, {
-      // Add longer timeout for auth operations
-      timeoutMS: 30000,
-      serverSelectionTimeoutMS: 15000,
     });
     
     if (!user) {
@@ -135,13 +132,9 @@ export async function registerUser(
   try {
     console.log('Starting user registration process for email:', email);
     
-    // Check if user exists
+    // Check if user exists (simplified connection)
     const existingUser = await withConnection(async () => {
       return UserModel.findOne({ email: email.toLowerCase() });
-    }, {
-      // Add longer timeout for registration operations
-      timeoutMS: 30000,
-      serverSelectionTimeoutMS: 15000,
     });
     
     if (existingUser) {
@@ -169,10 +162,6 @@ export async function registerUser(
           hashedPassword,
           roles: [{ id: '1', name: 'user' }]
         });
-      }, {
-        // Add longer timeout for registration operations
-        timeoutMS: 30000,
-        serverSelectionTimeoutMS: 15000,
       });
       
       console.log('User created successfully with ID:', user._id);

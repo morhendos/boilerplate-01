@@ -6,7 +6,14 @@
  */
 import { EventEmitter } from 'events';
 import mongoose, { Connection, ClientSession, ConnectOptions } from 'mongoose';
-import { Logger } from './connection-manager';
+
+// Define Logger interface directly since connection-manager has been removed
+export interface Logger {
+  debug(message: string, ...args: any[]): void;
+  info(message: string, ...args: any[]): void;
+  warn(message: string, ...args: any[]): void;
+  error(message: string, ...args: any[]): void;
+}
 
 /**
  * Get a mock database connection

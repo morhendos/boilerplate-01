@@ -4,7 +4,7 @@ import { CustomUser } from '@/types/auth';
 import bcrypt from 'bcryptjs';
 import { UserModel } from '@/models/user';
 import { loadEnvVars, ensureEnvVars } from '@/lib/db/env-debug';
-import { withAuthConnection } from '@/lib/db/auth-connection';
+import { withConnection } from '@/lib/db/simplified-connection';
 
 // Load env vars at the module level to ensure they're available
 loadEnvVars();
@@ -35,8 +35,8 @@ export async function authenticateUser(
   try {
     console.log(`[AUTH] Authenticating user: ${email}`);
     
-    // Use auth-specific connection for reliability
-    const user = await withAuthConnection(async () => {
+    // Use simplified connection for reliability
+    const user = await withConnection(async () => {
       return UserModel.findOne({ email: email.toLowerCase() });
     });
     
@@ -89,8 +89,8 @@ export async function registerUser(
   name?: string
 ): Promise<AuthResult> {
   try {
-    // Check if user exists with auth-specific connection
-    const existingUser = await withAuthConnection(async () => {
+    // Check if user exists with simplified connection
+    const existingUser = await withConnection(async () => {
       return UserModel.findOne({ email: email.toLowerCase() });
     });
     
@@ -107,8 +107,8 @@ export async function registerUser(
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user with auth-specific connection
-    const user = await withAuthConnection(async () => {
+    // Create user with simplified connection
+    const user = await withConnection(async () => {
       return UserModel.create({
         email: email.toLowerCase(),
         name: name || email.split('@')[0],

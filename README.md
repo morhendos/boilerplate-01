@@ -9,7 +9,7 @@ A streamlined, production-ready boilerplate for quickly building SaaS applicatio
 - 🔒 Protected routes
 - 📱 Responsive design using Tailwind CSS
 - 🌙 Dark/light mode support
-- 🔄 MongoDB integration
+- 🔄 MongoDB integration with simplified connection handling
 
 ## Tech Stack
 
@@ -100,16 +100,42 @@ The dashboard page at `src/app/dashboard/page.tsx` is a simple welcome page. You
 │   ├── components/       # Reusable components
 │   │   ├── auth/         # Auth-related components
 │   │   ├── common/       # Common UI components
+│   │   ├── error/        # Error handling components
 │   │   ├── layout/       # Layout components
 │   │   └── ui/           # UI primitives
 │   ├── config/           # Configuration
 │   ├── lib/              # Library code
 │   │   ├── auth/         # Auth utilities
-│   │   └── db/           # Database utilities
+│   │   ├── db/           # Database utilities
+│   │   ├── monitoring/   # Monitoring utilities
+│   │   └── services/     # Service modules
 │   ├── models/           # Database models
 │   │   └── user.ts       # User model
-│   └── types/            # TypeScript type definitions
+│   ├── types/            # TypeScript type definitions
+│   └── utils/            # Utility functions
 └── README.md             # Project documentation
+```
+
+## Database Connection
+
+This boilerplate uses a simplified approach to MongoDB connections:
+
+- **Singleton Pattern**: Maintains a single, persistent database connection
+- **Automatic Reconnection**: Handles connection drops gracefully
+- **Connection Pooling**: Efficiently manages database resources
+- **Error Handling**: Provides clear error messages and recovery mechanisms
+
+For database operations, use the `withConnection` function:
+
+```typescript
+import { withConnection } from '@/lib/db';
+
+async function getUserById(id: string) {
+  return withConnection(async () => {
+    // Database operations here
+    return await UserModel.findById(id);
+  });
+}
 ```
 
 ## Authentication Flow

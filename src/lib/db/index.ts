@@ -5,11 +5,12 @@
  * for the rest of the application to use.
  */
 
-// Export connection manager
-export { default as MongoConnectionManager } from './connection-manager';
+// Import mongoose for direct access
+import mongoose from 'mongoose';
 
-// Export database operations
-export * from './operations';
+// Export simplified connection utilities - our preferred approach
+import { withConnection, getConnection as getSimplifiedConnection, safeSerialize } from './simplified-connection';
+export { withConnection, getSimplifiedConnection, safeSerialize };
 
 // Export error handling utilities
 export * from './error-handler';
@@ -18,32 +19,53 @@ export * from './unified-error-handler';
 // Re-export useful types
 export { Connection } from 'mongoose';
 
-// For backward compatibility with existing code
-import { MongoConnectionManager } from './connection-manager';
-import { ConsoleLogger } from './connection-manager';
+// Define a simple logger class for backward compatibility
+export class ConsoleLogger {
+  debug(message: string, ...args: any[]): void {
+    console.debug(message, ...args);
+  }
+  
+  info(message: string, ...args: any[]): void {
+    console.info(message, ...args);
+  }
+  
+  warn(message: string, ...args: any[]): void {
+    console.warn(message, ...args);
+  }
+  
+  error(message: string, ...args: any[]): void {
+    console.error(message, ...args);
+  }
+}
 
 /**
- * Get a MongoDB connection (legacy method for compatibility)
+ * Get a MongoDB connection (simplified method)
  * 
- * @param options Connection options
+ * @param options Connection options (ignored, kept for backward compatibility)
  * @returns A Promise resolving to a Connection
  */
 export const getConnection = async (options: any = {}) => {
-  const manager = MongoConnectionManager.getInstance();
-  return manager.getConnection(options);
+  return getSimplifiedConnection();
 };
 
 /**
- * Disconnect all MongoDB connections (legacy method for compatibility)
+ * Disconnect all MongoDB connections
  * 
  * @returns A Promise that resolves when disconnection is complete
  */
 export const disconnectAll = async () => {
-  return MongoConnectionManager.disconnectAll();
+  try {
+    if (mongoose && mongoose.connection && mongoose.connection.readyState !== 0) {
+      await mongoose.disconnect();
+      console.debug('[MongoDB] All connections closed');
+    }
+  } catch (error) {
+    console.error('[MongoDB] Error disconnecting all connections:', error);
+  }
 };
 
 /**
- * Create a logger instance (legacy method for compatibility)
+ * Create a logger instance (for backward compatibility)
  * 
  * @param prefix The prefix for log messages
  * @returns A logger instance
