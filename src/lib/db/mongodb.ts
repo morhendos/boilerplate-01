@@ -12,7 +12,7 @@ import mongoose from 'mongoose';
 import { getAtlasConfig, getMonitoringConfig } from './atlas-config';
 import { validateMongoURI, getSanitizedURI, normalizeMongoURI, isLocalConnection } from '@/utils/mongodb-uri';
 import { monitoring } from '@/lib/monitoring';
-import { loadEnvVars, ensureEnvVars } from './env-debug';
+import { loadEnvVars, ensureEnvVars } from '@/config/environment';
 import { createLogger } from '@/lib/logger';
 
 // Initialize logger
