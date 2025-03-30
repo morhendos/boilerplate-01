@@ -72,6 +72,11 @@ export async function getDatabaseHealth(): Promise<DatabaseHealthResponse> {
     
     if (conn && conn.readyState === 1) {
       try {
+        // Check if db is defined before using it
+        if (!conn.db) {
+          throw new Error("Database connection not fully established");
+        }
+        
         // Check if we can ping the database
         await conn.db.admin().ping();
         status = 'healthy';
