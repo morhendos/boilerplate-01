@@ -3,7 +3,7 @@
 import { CustomUser } from '@/types/auth';
 import bcrypt from 'bcryptjs';
 import { UserModel } from '@/models/user';
-import { loadEnvVars, ensureEnvVars } from '@/lib/db/env-debug';
+import { loadEnvVars, ensureEnvVars } from '@/config/environment';
 import { withConnection } from '@/lib/db/simplified-connection';
 
 // Load env vars at the module level to ensure they're available
