@@ -6,13 +6,30 @@
  */
 
 // Export simplified connection utilities - our preferred approach
-export * from './simplified-connection';
+import { withConnection, getConnection as getSimplifiedConnection, safeSerialize } from './simplified-connection';
+export { withConnection, getSimplifiedConnection, safeSerialize };
 
 // Export connection manager for backward compatibility
 export { default as MongoConnectionManager } from './connection-manager';
 
-// Export database operations
-export * from './operations';
+// Export database operations (excluding withConnection to avoid conflict)
+import { 
+  findDocuments, 
+  findDocument, 
+  insertDocument, 
+  updateDocument, 
+  deleteDocument,
+  DbOperationOptions 
+} from './operations';
+
+export { 
+  findDocuments, 
+  findDocument, 
+  insertDocument, 
+  updateDocument, 
+  deleteDocument,
+  DbOperationOptions 
+};
 
 // Export error handling utilities
 export * from './error-handler';
@@ -24,7 +41,6 @@ export { Connection } from 'mongoose';
 // For backward compatibility with existing code
 import { MongoConnectionManager } from './connection-manager';
 import { ConsoleLogger } from './connection-manager';
-import { getConnection as getSimplifiedConnection } from './simplified-connection';
 
 /**
  * Get a MongoDB connection (legacy method for compatibility)
