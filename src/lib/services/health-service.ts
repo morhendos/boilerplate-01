@@ -8,7 +8,6 @@
 import { withErrorHandling } from '@/lib/db/unified-error-handler';
 import { MongoConnectionManager } from '@/lib/db/connection-manager';
 import { checkDatabaseHealth } from '@/lib/db/mongodb';
-import { SubscriptionModel } from '@/models/subscription';
 import mongoose from 'mongoose';
 
 /**
@@ -40,7 +39,6 @@ export interface SystemHealthResponse extends HealthStatus {
     error?: string;
   };
   schemas: {
-    subscriptionModel: boolean;
     collections: string[];
   };
 }
@@ -82,7 +80,6 @@ export async function getSystemHealth(): Promise<SystemHealthResponse> {
     
     // Initialize schema health information
     const schemaHealth = {
-      subscriptionModel: !!SubscriptionModel,
       collections: [] as string[]
     };
 
