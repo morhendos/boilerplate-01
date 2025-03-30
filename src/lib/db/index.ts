@@ -14,8 +14,12 @@
 import mongoose from 'mongoose';
 
 // Export simplified connection utilities - our preferred approach
-import { withConnection, getConnection as getSimplifiedConnection, safeSerialize } from './simplified-connection';
-export { withConnection, getSimplifiedConnection, safeSerialize };
+import { withConnection, getConnection as getSimplifiedConnection } from './simplified-connection';
+export { withConnection };
+
+// Export database utilities
+import { safeSerialize, toJSON, toObject, createModel } from './utils';
+export { safeSerialize, toJSON, toObject, createModel };
 
 // Export error handling utilities
 export * from './error-handler';
@@ -55,27 +59,6 @@ export const disconnectAll = async () => {
     dbLogger.error('Error disconnecting all connections:', error);
   }
 };
-
-/**
- * Create a database model with proper error handling
- * 
- * @param name Model name
- * @param schema Mongoose schema
- * @returns A Mongoose model
- */
-export function createModel<T>(name: string, schema: mongoose.Schema) {
-  try {
-    // Try to get the model if it's already registered
-    return mongoose.models[name] as mongoose.Model<T> || 
-      mongoose.model<T>(name, schema);
-  } catch (error: unknown) {
-    // If the model is already registered, return it
-    if (error instanceof Error && error.name === 'OverwriteModelError') {
-      return mongoose.model<T>(name);
-    }
-    throw error;
-  }
-}
 
 // Export for backward compatibility
 export { createLogger };

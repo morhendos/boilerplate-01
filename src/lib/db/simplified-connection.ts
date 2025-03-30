@@ -8,6 +8,7 @@
 import mongoose from 'mongoose';
 import { normalizeMongoURI } from '@/utils/mongodb-uri';
 import { createLogger } from '@/lib/logger';
+import { getReadyStateDescription } from './utils/connection-helpers';
 
 // Global connection state
 let connection: mongoose.Connection | null = null;
@@ -43,6 +44,7 @@ export async function getConnection(): Promise<mongoose.Connection> {
       
       // Log database name for debugging - use optional chaining to avoid TypeScript errors
       dbLogger.info(`Connected to database: ${connection?.db?.databaseName || 'unknown'}`);
+      dbLogger.debug(`Connection state: ${getReadyStateDescription(connection.readyState)}`);
       
       // Listen for disconnect events
       connection.on('disconnected', () => {
@@ -80,57 +82,4 @@ export async function withConnection<T>(
   
   // Now run the operation
   return await operation();
-}
-
-/**
- * Safe serialize function to prevent circular references in Mongoose documents
- * 
- * @param obj Object to serialize
- * @returns Safely serialized object
- */
-export function safeSerialize(obj: any): any {
-  if (obj === null || obj === undefined) {
-    return obj;
-  }
-  
-  // Handle Mongoose document - convert to POJO
-  if (obj.toObject && typeof obj.toObject === 'function') {
-    return safeSerialize(obj.toObject());
-  }
-  
-  // Handle MongoDB ObjectId
-  if (obj instanceof mongoose.Types.ObjectId) {
-    return obj.toString();
-  }
-  
-  // Handle Date objects
-  if (obj instanceof Date) {
-    return obj.toISOString();
-  }
-  
-  // Handle arrays
-  if (Array.isArray(obj)) {
-    return obj.map(item => safeSerialize(item));
-  }
-  
-  // Handle objects
-  if (typeof obj === 'object') {
-    const result: any = {};
-    for (const key in obj) {
-      // Skip Mongoose document methods and private fields
-      if (key.startsWith('$') || (key.startsWith('_') && key !== '_id')) {
-        continue;
-      }
-      try {
-        result[key] = safeSerialize(obj[key]);
-      } catch {
-        // If serialization fails, use a placeholder
-        result[key] = '[Unserializable]';
-      }
-    }
-    return result;
-  }
-  
-  // Return primitives as is
-  return obj;
 }

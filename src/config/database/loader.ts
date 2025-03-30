@@ -1,130 +1,24 @@
 /**
- * Unified MongoDB Database Configuration
+ * MongoDB Configuration Loader
  * 
- * Centralizes all database configuration values to ensure consistent
- * settings across the application. Values are loaded from environment
- * variables with sensible defaults for both development and production.
+ * Loads MongoDB configuration with environment-specific values and
+ * environment variable overrides.
  */
 
 import { ReadPreferenceMode } from 'mongodb';
+import { createLogger } from '@/lib/logger';
+import { isLocalConnection } from '@/utils/mongodb-uri';
+import { 
+  isDevelopment, 
+  isProduction,
+  isTest,
+  isBuildTime,
+  isStaticGeneration
+} from '../environment';
+import { MongoDBConfig, WriteConcern } from './types';
 
-// Supported write concern types
-type WriteConcern = number | 'majority';
-type MongoCompressor = 'none' | 'snappy' | 'zlib' | 'zstd';
-
-/**
- * MongoDB Configuration Interface
- */
-export interface MongoDBConfig {
-  // Connection details
-  uri: string;
-  databaseName: string;
-  
-  // Connection pool settings
-  maxPoolSize: number;
-  minPoolSize: number;
-  
-  // Timeouts
-  connectionTimeoutMS: number;
-  serverSelectionTimeoutMS: number;
-  socketTimeoutMS: number;
-  maxIdleTimeMS: number;
-  
-  // Retry settings
-  maxRetries: number;
-  retryDelayMS: number;
-  
-  // Read/Write preferences
-  writeConcern: WriteConcern;
-  readPreference: ReadPreferenceMode;
-  
-  // Other settings
-  autoIndex: boolean;
-  autoCreate: boolean;
-  ssl: boolean;
-  authSource: string;
-  retryWrites: boolean;
-  retryReads: boolean;
-  compressors?: MongoCompressor[];
-  
-  // Monitoring settings
-  monitoring: {
-    enabled: boolean;
-    metricsIntervalSeconds: number;
-    
-    // Alerts
-    alerts: {
-      queryPerformance: {
-        enabled: boolean;
-        slowQueryThresholdMs: number;
-        aggregationThresholdMs: number;
-      };
-      connectionPoolUtilization: {
-        enabled: boolean;
-        threshold: number;
-        criticalThreshold: number;
-      };
-      replication: {
-        enabled: boolean;
-        maxLagSeconds: number;
-      };
-    };
-    
-    // Logging
-    logging: {
-      slowQueryThresholdMs: number;
-      rotationDays: number;
-      level: 'error' | 'warn' | 'info' | 'debug';
-      mongoDBProfileLevel: 0 | 1 | 2;
-    };
-  };
-  
-  // Development-specific settings
-  development: {
-    logOperations: boolean;
-  };
-}
-
-// Environment detection
-export const isDevelopment = process.env.NODE_ENV === 'development';
-export const isProduction = process.env.NODE_ENV === 'production';
-export const isTest = process.env.NODE_ENV === 'test';
-
-// Build time detection - multiple ways to detect
-export const isBuildTime = 
-  // Check Next.js phase env var
-  process.env.NEXT_PHASE?.includes('build') || 
-  process.env.NEXT_PHASE === 'phase-export' || 
-  // Check custom flag from next.config.js
-  process.env.IS_BUILD_TIME === 'true';
-
-// Static generation detection (important for preventing DB connections during build)
-export const isStaticGeneration = 
-  isBuildTime || 
-  typeof process !== 'undefined' && process.env.NEXT_PHASE !== undefined;
-
-/**
- * Check if a URI is for a local MongoDB connection
- * 
- * @param uri MongoDB connection URI
- * @returns True if the URI is for a local connection
- */
-export function isLocalConnection(uri: string): boolean {
-  try {
-    const url = new URL(uri);
-    return url.hostname === 'localhost' || 
-           url.hostname === '127.0.0.1' || 
-           url.hostname === '0.0.0.0' ||
-           url.hostname.startsWith('192.168.') ||
-           url.hostname.startsWith('10.') ||
-           url.hostname === 'host.docker.internal';
-  } catch (error) {
-    // If URL parsing fails, do a simple string check
-    return uri.includes('localhost') || 
-           uri.includes('127.0.0.1') || 
-           uri.includes('0.0.0.0');
-  }
-}
+// Initialize logger
+const logger = createLogger('MongoDB Config');
 
 /**
  * Default MongoDB configuration values for production environment
@@ -142,8 +36,8 @@ const PRODUCTION_CONFIG: Partial<MongoDBConfig> = {
   connectionTimeoutMS: 30000, // Increased from 10000 to 30000
   
   // Read/Write preferences
-  writeConcern: 'majority',
-  readPreference: 'primaryPreferred',
+  writeConcern: 'majority' as WriteConcern,
+  readPreference: 'primaryPreferred' as ReadPreferenceMode,
   
   // Other settings
   autoIndex: false,
@@ -203,8 +97,8 @@ const DEVELOPMENT_CONFIG: Partial<MongoDBConfig> = {
   connectionTimeoutMS: 45000, // Increased from 20000 to 45000
   
   // Read/Write preferences
-  writeConcern: 1,
-  readPreference: 'primary',
+  writeConcern: 1 as WriteConcern,
+  readPreference: 'primary' as ReadPreferenceMode,
   
   // Other settings
   autoIndex: true,
@@ -307,7 +201,7 @@ export function loadMongoDBConfig(): MongoDBConfig {
   let baseConfig: Partial<MongoDBConfig>;
   
   if (isBuildTime || isStaticGeneration) {
-    console.log('[MongoDB Config] Using build-time configuration');
+    logger.info('Using build-time configuration');
     baseConfig = {
       ...DEVELOPMENT_CONFIG,
       ...BUILD_TIME_CONFIG
@@ -340,13 +234,13 @@ export function loadMongoDBConfig(): MongoDBConfig {
   // Disable SSL for local connections
   if (config.uri && isLocalConnection(config.uri)) {
     // Force disable SSL for localhost connections to prevent handshake issues
-    console.log('[MongoDB Config] Localhost connection detected, disabling SSL');
+    logger.info('Localhost connection detected, disabling SSL');
     config.ssl = false;
   }
 
   // Disable SSL during build time regardless of other settings
   if (isBuildTime || isStaticGeneration) {
-    console.log('[MongoDB Config] Build-time operation detected, disabling SSL');
+    logger.info('Build-time operation detected, disabling SSL');
     config.ssl = false;
   }
 
@@ -428,7 +322,5 @@ export function loadMongoDBConfig(): MongoDBConfig {
 }
 
 // Export the loaded configuration
-export const mongodbConfig = loadMongoDBConfig();
-
-// Default export for convenience
+const mongodbConfig = loadMongoDBConfig();
 export default mongodbConfig;
