@@ -1,11 +1,27 @@
 /**
- * MongoDB Connection and Utilities
+ * Advanced MongoDB Connection and Monitoring Module
+ * 
+ * IMPORTANT USAGE NOTE:
+ * ---------------------
+ * THIS MODULE SHOULD ONLY BE USED FOR:
+ * 1. Advanced monitoring and health checks in production environments
+ * 2. Database administration tasks
+ * 3. The database health API endpoint
+ * 
+ * For regular application database access, use the simplified connection approach:
+ * import { withConnection, getConnection } from '@/lib/db';
  * 
  * This module provides MongoDB connection functionality with advanced features like
- * retry mechanisms, Atlas monitoring, and health checks.
+ * retry mechanisms, Atlas monitoring, and health checks that are unnecessary for
+ * regular application code.
  * 
- * NOTE: For most application code, use the simplified-connection.ts module instead,
- * which is exposed through the db/index.ts entry point.
+ * RELATIONSHIP TO SIMPLIFIED-CONNECTION.TS:
+ * -----------------------------------------
+ * - simplified-connection.ts: Used for normal application database access
+ * - mongodb.ts (this file): Used for monitoring, health checks, and diagnostics
+ * 
+ * The application has been refactored to consolidate connection logic in the
+ * simplified-connection.ts module, but this file is maintained for specialized use cases.
  */
 
 import mongoose from 'mongoose';
@@ -245,7 +261,14 @@ async function connectWithRetry(retryCount = 0): Promise<mongoose.Connection> {
   }
 }
 
-// Main connection function
+/**
+ * Connect to MongoDB with advanced monitoring and retry mechanisms
+ * 
+ * NOTE: This should only be used for specialized cases like health checks or monitoring.
+ * For normal application database access, use the simplified connection approach instead.
+ * 
+ * @returns A Promise resolving to a mongoose Connection
+ */
 export async function connectToDatabase(): Promise<mongoose.Connection> {
   if (cached.conn) {
     isDev && logger.info('Using cached connection');
@@ -286,7 +309,14 @@ export async function disconnectFromDatabase(): Promise<void> {
   }
 }
 
-// Enhanced health check function with Atlas metrics
+/**
+ * Performs advanced health check for MongoDB connection
+ * 
+ * This function is primarily intended for the health API endpoint
+ * that reports database status to monitoring systems.
+ * 
+ * @returns Health check result with detailed metrics
+ */
 export async function checkDatabaseHealth(): Promise<{
   status: 'healthy' | 'unhealthy';
   latency: number;
