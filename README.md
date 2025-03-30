@@ -1,25 +1,24 @@
 # SaaS Application Boilerplate
 
-A modern, production-ready boilerplate for building SaaS applications with a
-focus on subscription management.
+A streamlined, production-ready boilerplate for quickly building SaaS applications with a focus on authentication and basic functionality.
 
 ## Features
 
-- 🔐 Authentication system with JWT
-- 💳 Subscription management ready
-- 🌐 API endpoints for frontend integration
-- 📊 Admin dashboard
-- 📱 Responsive design
-- 🔄 CI/CD ready
+- 🔐 User authentication with Next-Auth
+- 👤 User registration and login flow
+- 🔒 Protected routes
+- 📱 Responsive design using Tailwind CSS
+- 🌙 Dark/light mode support
+- 🔄 MongoDB integration
 
 ## Tech Stack
 
-- **Frontend**: React/Next.js
-- **Backend**: Node.js/Express
-- **Database**: PostgreSQL
-- **Authentication**: JWT
-- **Styling**: Tailwind CSS
-- **Payment Processing**: Stripe integration
+- **Framework**: Next.js 14 with App Router
+- **Frontend**: React 18
+- **Database**: MongoDB with Mongoose
+- **Authentication**: NextAuth.js
+- **Styling**: Tailwind CSS + Radix UI components
+- **Language**: TypeScript
 
 ## Getting Started
 
@@ -27,8 +26,7 @@ focus on subscription management.
 
 - Node.js (v16+)
 - npm or yarn
-- PostgreSQL
-- Stripe account (for payments)
+- MongoDB (local or Atlas)
 
 ### Installation
 
@@ -42,102 +40,93 @@ focus on subscription management.
 2. Install dependencies
 
    ```bash
-   # Install backend dependencies
-   cd backend
    npm install
-
-   # Install frontend dependencies
-   cd ../frontend
-   npm install
+   # or
+   yarn install
    ```
 
 3. Environment setup
 
    ```bash
-   # Backend
-   cd backend
-   cp .env.example .env
-   # Edit .env with your configuration
-
-   # Frontend
-   cd ../frontend
-   cp .env.example .env
-   # Edit .env with your configuration
+   cp .env.example .env.local
+   # Edit .env.local with your configuration
    ```
 
-4. Database setup
+4. Start development server
 
    ```bash
-   # Run migrations
-   cd backend
-   npm run migrate
-
-   # Optional: Seed the database
-   npm run seed
-   ```
-
-5. Start development servers
-
-   ```bash
-   # Backend
-   cd backend
    npm run dev
-
-   # Frontend (in a new terminal)
-   cd frontend
-   npm run dev
+   # or
+   yarn dev
    ```
 
 ## Customization Guide
 
 ### Renaming the Application
 
-1. Search and replace "SaaS Boilerplate" with your application name
-2. Update package.json files in both frontend and backend directories
-3. Update the frontend title and metadata in `pages/_app.js` and
-   `pages/_document.js`
+1. Update the name in `package.json`
+2. Update the title and metadata in `src/app/layout.tsx`
 
 ### Adding New Features
 
-The codebase is organized following best practices:
+The codebase is organized following Next.js best practices:
 
-- **Backend**: MVC pattern with controllers, models, and routes
-- **Frontend**: Component-based architecture with pages and reusable components
+- **Pages**: Found in the `src/app` directory
+- **Components**: Reusable UI elements in `src/components`
+- **API Routes**: API handlers in `src/app/api` directory
+- **Authentication**: Auth configuration in `src/lib/auth`
+- **Database**: Database models in `src/models`
 
-### Deployment
+### Extending the Dashboard
 
-This boilerplate is set up for deployment on various platforms:
+The dashboard page at `src/app/dashboard/page.tsx` is a simple welcome page. You can extend it by:
 
-- **Vercel**: For the frontend Next.js application
-- **Heroku/AWS**: For the backend API
-- **Database**: Managed PostgreSQL services like AWS RDS
+1. Adding more sections to the dashboard
+2. Creating subpages under the dashboard directory
+3. Adding navigation components
 
 ## Project Structure
 
 ```
 .
-├── backend/               # Node.js/Express API
-│   ├── config/            # Configuration files
-│   ├── controllers/       # Route controllers
-│   ├── middlewares/       # Express middlewares
-│   ├── models/            # Database models
-│   ├── routes/            # API routes
-│   ├── services/          # Business logic
-│   ├── utils/             # Utility functions
-│   └── server.js          # Server entry point
-│
-├── frontend/              # React/Next.js application
-│   ├── components/        # Reusable components
-│   ├── contexts/          # React contexts
-│   ├── hooks/             # Custom hooks
-│   ├── pages/             # Next.js pages
-│   ├── public/            # Static files
-│   ├── services/          # API service integrations
-│   ├── styles/            # Global styles
-│   └── utils/             # Utility functions
-│
-└── README.md              # Project documentation
+├── public/               # Static assets
+├── src/
+│   ├── app/              # Next.js App Router
+│   │   ├── api/          # API routes
+│   │   ├── auth/         # Authentication pages
+│   │   ├── dashboard/    # Dashboard pages
+│   │   ├── login/        # Login page
+│   │   └── signup/       # Signup page
+│   ├── components/       # Reusable components
+│   │   ├── auth/         # Auth-related components
+│   │   ├── common/       # Common UI components
+│   │   ├── layout/       # Layout components
+│   │   └── ui/           # UI primitives
+│   ├── config/           # Configuration
+│   ├── lib/              # Library code
+│   │   ├── auth/         # Auth utilities
+│   │   └── db/           # Database utilities
+│   ├── models/           # Database models
+│   │   └── user.ts       # User model
+│   └── types/            # TypeScript type definitions
+└── README.md             # Project documentation
 ```
+
+## Authentication Flow
+
+This boilerplate uses NextAuth.js with a Credentials provider for email/password authentication. The flow includes:
+
+1. User registration with email validation
+2. Secure login with JWT sessions
+3. Protected routes that redirect to login when unauthenticated
+4. Session management
+
+## Deployment
+
+This boilerplate is ready for deployment on various platforms:
+
+- **Vercel**: Optimized for deployment on Vercel
+- **MongoDB Atlas**: Recommended for database hosting
 
 ## Contributing
 
@@ -145,5 +134,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for
-details.
+This project is licensed under the MIT License.
