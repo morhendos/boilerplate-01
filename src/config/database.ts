@@ -6,13 +6,17 @@
  */
 
 import mongodbConfig, { 
+  MongoDBConfig 
+} from './database-config';
+
+// Import environment variables from the centralized configuration
+import { 
   isDevelopment, 
   isProduction, 
   isTest,
-  isBuildTime,
-  isStaticGeneration,
-  MongoDBConfig 
-} from './database-config';
+  isBuildTime, 
+  isStaticGeneration 
+} from './environment';
 
 // Re-export environment detection helpers
 export { isDevelopment, isProduction, isTest, isBuildTime, isStaticGeneration };
