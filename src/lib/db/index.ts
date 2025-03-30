@@ -12,25 +12,6 @@ export { withConnection, getSimplifiedConnection, safeSerialize };
 // Export connection manager for backward compatibility
 export { default as MongoConnectionManager } from './connection-manager';
 
-// Export database operations (excluding withConnection to avoid conflict)
-import { 
-  findDocuments, 
-  findDocument, 
-  insertDocument, 
-  updateDocument, 
-  deleteDocument,
-  DbOperationOptions 
-} from './operations';
-
-export { 
-  findDocuments, 
-  findDocument, 
-  insertDocument, 
-  updateDocument, 
-  deleteDocument,
-  DbOperationOptions 
-};
-
 // Export error handling utilities
 export * from './error-handler';
 export * from './unified-error-handler';
