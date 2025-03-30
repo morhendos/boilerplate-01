@@ -9,7 +9,7 @@
     "lint": "next lint",
     "tree": "node scripts/tree.js",
     "test:connection": "tsx src/lib/db/test-connection.ts",
-    "check:env": "tsx src/config/environment-utils.ts",
+    "check:env": "tsx src/config/check-env.ts",
     "mongodb:start": "brew services start mongodb-community",
     "mongodb:stop": "brew services stop mongodb-community",
     "mongodb:restart": "brew services restart mongodb-community",
