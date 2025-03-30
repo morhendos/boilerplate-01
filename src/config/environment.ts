@@ -5,6 +5,10 @@
  * type-safe access to configuration values across the application.
  */
 import { createLogger } from '@/lib/logger';
+import { loadEnvVars as loadVars, ensureEnvVars as checkVars } from './environment-utils';
+
+// Re-export compatibility functions
+export { loadEnvVars, ensureEnvVars } from './environment-utils';
 
 // Initialize logger
 const logger = createLogger('Env');
@@ -72,6 +76,8 @@ export const isStaticGeneration =
 export function loadEnv(): Partial<EnvironmentVars> {
   try {
     // Attempt to load .env if not already loaded
+    loadVars();
+    
     if (typeof process !== 'undefined' && process.env) {
       // Apply default values for missing variables
       Object.entries(defaultEnvValues).forEach(([key, value]) => {
@@ -82,12 +88,8 @@ export function loadEnv(): Partial<EnvironmentVars> {
 
       // Required variables in production
       if (isProduction) {
-        const requiredVars = ['MONGODB_URI', 'NEXTAUTH_SECRET', 'NEXTAUTH_URL'];
-        const missing = requiredVars.filter(name => !process.env[name]);
-        
-        if (missing.length > 0) {
-          logger.error(`Missing required environment variables: ${missing.join(', ')}`);
-        }
+        // Ensure required variables are set
+        checkVars();
       }
 
       // Validate development environment
