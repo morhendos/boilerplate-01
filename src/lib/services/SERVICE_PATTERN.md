@@ -1,6 +1,6 @@
 # Service Function Pattern
 
-This document describes the recommended pattern for implementing service functions in the Subscription Tracker application.
+This document describes the recommended pattern for implementing service functions in the SaaS application.
 
 ## What are Service Functions?
 
@@ -18,55 +18,56 @@ Service functions are pure JavaScript/TypeScript functions that encapsulate busi
 ### Basic Pattern
 
 ```typescript
-// src/lib/services/subscription-service.ts
+// src/lib/services/user-service.ts
 
 import { withConnection } from '@/lib/db/simplified-connection';
 import { withErrorHandling } from '@/lib/db/unified-error-handler';
-import { SubscriptionModel } from '@/models/subscription';
-import { Subscription, SubscriptionFormData } from '@/types/subscriptions';
+import { UserModel } from '@/models/user';
+import { User } from '@/types/user';
 
 /**
- * Get all subscriptions for a user
+ * Get user by ID
  */
-export async function getUserSubscriptions(userId: string): Promise<Subscription[]> {
+export async function getUserById(userId: string): Promise<User | null> {
   return withErrorHandling(async () => {
     return withConnection(async () => {
-      const subscriptions = await SubscriptionModel.find({ userId })
-        .sort({ nextBillingDate: 1 })
+      const user = await UserModel.findById(userId)
         .lean()
         .exec();
 
-      return subscriptions.map(formatSubscription);
+      if (!user) {
+        return null;
+      }
+
+      return formatUser(user);
     });
-  }, 'getUserSubscriptions');
+  }, 'getUserById');
 }
 
 /**
- * Create a new subscription for a user
+ * Create a new user
  */
-export async function createSubscription(
-  userId: string, 
-  data: SubscriptionFormData
-): Promise<Subscription> {
+export async function createUser(
+  data: { email: string; name: string; }
+): Promise<User> {
   return withErrorHandling(async () => {
     return withConnection(async () => {
-      const subscription = await SubscriptionModel.create({
-        userId,
+      const user = await UserModel.create({
         ...data,
-        nextBillingDate: calculateNextBillingDate(data.startDate, data.billingPeriod)
+        roles: [{ id: '1', name: 'user' }]
       });
 
-      return formatSubscription(subscription);
+      return formatUser(user);
     });
-  }, 'createSubscription');
+  }, 'createUser');
 }
 
-// Helper function to format subscription data consistently
-function formatSubscription(subscription: any): Subscription {
+// Helper function to format user data consistently
+function formatUser(user: any): User {
   return {
-    id: subscription._id.toString(),
-    name: subscription.name,
-    price: subscription.price,
+    id: user._id.toString(),
+    email: user.email,
+    name: user.name,
     // ... other fields
   };
 }
@@ -75,13 +76,13 @@ function formatSubscription(subscription: any): Subscription {
 ### Usage in API Routes
 
 ```typescript
-// src/app/api/subscriptions/route.ts
+// src/app/api/users/route.ts
 
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { createErrorResponse } from '@/lib/db/unified-error-handler';
 import { MongoDBErrorCode } from '@/lib/db/error-handler';
-import { getUserSubscriptions } from '@/lib/services/subscription-service';
+import { getUserById } from '@/lib/services/user-service';
 
 export async function GET() {
   try {
@@ -97,10 +98,10 @@ export async function GET() {
       );
     }
 
-    const subscriptions = await getUserSubscriptions(session.user.id);
-    return NextResponse.json(subscriptions);
+    const user = await getUserById(session.user.id);
+    return NextResponse.json(user);
   } catch (error: unknown) {
-    console.error('GET /api/subscriptions error:', error);
+    console.error('GET /api/users error:', error);
     
     const errorResponse = createErrorResponse(error);
     
@@ -118,7 +119,7 @@ export async function GET() {
 ## Best Practices
 
 1. **Function Naming**:
-   - Use descriptive verb-noun pairs: `getUserSubscriptions`, `createSubscription`
+   - Use descriptive verb-noun pairs: `getUserById`, `createUser`
    - Avoid generic names like `getData` or `processItem`
 
 2. **Error Handling**:
@@ -150,9 +151,9 @@ Organize service functions by feature area:
 
 ```
 src/lib/services/
-  ├── subscription-service.ts
   ├── user-service.ts
-  ├── billing-service.ts
+  ├── auth-service.ts
+  ├── analytics-service.ts
   └── notification-service.ts
 ```
 
@@ -161,7 +162,7 @@ src/lib/services/
 For larger features, you can further organize by operation type:
 
 ```
-src/lib/services/subscriptions/
+src/lib/services/users/
   ├── queries.ts      // All read operations
   ├── commands.ts     // All write operations
   ├── calculations.ts // Business logic calculations
@@ -171,49 +172,47 @@ src/lib/services/subscriptions/
 ## Testing
 
 ```typescript
-// src/lib/services/__tests__/subscription-service.test.ts
+// src/lib/services/__tests__/user-service.test.ts
 
-import { getUserSubscriptions } from '../subscription-service';
-import { SubscriptionModel } from '@/models/subscription';
+import { getUserById } from '../user-service';
+import { UserModel } from '@/models/user';
 import mongoose from 'mongoose';
 
 // Mock the Mongoose model
-jest.mock('@/models/subscription');
+jest.mock('@/models/user');
 
-describe('Subscription Service', () => {
+describe('User Service', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  describe('getUserSubscriptions', () => {
-    it('should return formatted subscriptions for a user', async () => {
+  describe('getUserById', () => {
+    it('should return formatted user data when user exists', async () => {
       // Arrange
-      const mockSubscriptions = [
-        {
-          _id: new mongoose.Types.ObjectId(),
-          name: 'Netflix',
-          price: 9.99,
-          // ... other fields
-        }
-      ];
+      const mockUser = {
+        _id: new mongoose.Types.ObjectId(),
+        name: 'John Doe',
+        email: 'john@example.com',
+        // ... other fields
+      };
       
       // Setup mock
-      (SubscriptionModel.find as jest.Mock).mockReturnValue({
-        sort: jest.fn().mockReturnValue({
-          lean: jest.fn().mockReturnValue({
-            exec: jest.fn().mockResolvedValue(mockSubscriptions)
-          })
+      (UserModel.findById as jest.Mock).mockReturnValue({
+        lean: jest.fn().mockReturnValue({
+          exec: jest.fn().mockResolvedValue(mockUser)
         })
       });
       
       // Act
-      const result = await getUserSubscriptions('user-123');
+      const result = await getUserById(mockUser._id.toString());
       
       // Assert
-      expect(SubscriptionModel.find).toHaveBeenCalledWith({ userId: 'user-123' });
-      expect(result).toHaveLength(1);
-      expect(result[0].id).toBe(mockSubscriptions[0]._id.toString());
-      expect(result[0].name).toBe('Netflix');
+      expect(UserModel.findById).toHaveBeenCalledWith(mockUser._id.toString());
+      expect(result).toEqual({
+        id: mockUser._id.toString(),
+        name: 'John Doe',
+        email: 'john@example.com'
+      });
     });
   });
 });
