@@ -57,7 +57,7 @@ export async function getConnection(): Promise<mongoose.Connection> {
   // Start a new connection
   console.log('[DB FIX] Creating new MongoDB connection');
   
-  connectionPromise = mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/subscriptions')
+  connectionPromise = mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/saas_db')
     .then(() => {
       console.log('[DB FIX] MongoDB connected successfully');
       connection = mongoose.connection;
