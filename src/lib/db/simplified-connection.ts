@@ -7,14 +7,14 @@
 
 import mongoose from 'mongoose';
 import { normalizeMongoURI } from '@/utils/mongodb-uri';
-import { logger } from '@/lib/logger';
+import { createLogger } from '@/lib/logger';
 
 // Global connection state
 let connection: mongoose.Connection | null = null;
 let connectionPromise: Promise<mongoose.Connection> | null = null;
 
 // Database logger instance
-const dbLogger = logger.createLogger('DB');
+const dbLogger = createLogger('DB');
 
 /**
  * Get a MongoDB connection, reusing an existing one if available
