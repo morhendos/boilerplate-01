@@ -4,7 +4,7 @@ import { AUTH_CONFIG } from './config'
 import { AuthError, validateEmail, validatePassword } from './validation'
 import { authenticateUser } from '@/app/auth-actions'
 import { CustomUser } from '@/types/auth'
-import { loadEnvVars, ensureEnvVars } from '@/lib/db/env-debug'
+import { loadEnvVars, ensureEnvVars } from '@/config/environment'
 
 // Load environment variables to ensure they're available
 loadEnvVars();
