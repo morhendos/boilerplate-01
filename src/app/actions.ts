@@ -4,7 +4,7 @@ import { CustomUser } from '@/types/auth';
 import bcrypt from 'bcryptjs';
 import { UserModel } from '@/models/user';
 import { withConnection, handleMongoError, logMongoError } from '@/lib/db';
-import { loadEnvVars, ensureEnvVars } from '@/lib/db/env-debug';
+import { loadEnvVars, ensureEnvVars } from '@/config/environment';
 
 // Load env vars at the module level to ensure they're available
 loadEnvVars();
