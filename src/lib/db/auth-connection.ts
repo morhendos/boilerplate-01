@@ -28,11 +28,13 @@ let connectionPromise: Promise<mongoose.Connection> | null = null;
  * 
  * This function ensures the URI has the correct database name.
  * It specifically addresses the issue where connections might be using
- * the 'test' database instead of 'subscriptions' in production.
+ * the 'test' database instead of our app database in production.
  */
 export function normalizeMongoUri(uri: string): string {
-  // If the URI already includes 'subscriptions', don't modify it
-  if (uri.includes('/subscriptions')) {
+  const dbName = process.env.MONGODB_DATABASE || 'saas-app';
+  
+  // If the URI already includes our database name, don't modify it
+  if (uri.includes(`/${dbName}`)) {
     return uri;
   }
   
@@ -43,12 +45,12 @@ export function normalizeMongoUri(uri: string): string {
   if (uriParts.length > 3) {
     // Get the base URI without the database name
     const baseUri = uriParts.slice(0, -1).join('/');
-    // Ensure we use the 'subscriptions' database
-    return `${baseUri}/subscriptions`;
+    // Ensure we use our database
+    return `${baseUri}/${dbName}`;
   }
   
-  // If no database is specified, append 'subscriptions'
-  return `${uri}/subscriptions`;
+  // If no database is specified, append our database name
+  return `${uri}/${dbName}`;
 }
 
 /**
@@ -66,7 +68,8 @@ export async function getAuthConnection(options?: AuthConnectionOptions): Promis
   }
   
   // Get and normalize MongoDB URI
-  const originalUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/subscriptions';
+  const dbName = process.env.MONGODB_DATABASE || 'saas-app';
+  const originalUri = process.env.MONGODB_URI || `mongodb://localhost:27017/${dbName}`;
   const normalizedUri = normalizeMongoUri(originalUri);
   
   // Log the database being used (without exposing full URI for security)
