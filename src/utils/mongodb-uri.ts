@@ -13,7 +13,7 @@
  * @param dbName - The database name to use if not specified in the URI
  * @returns A properly formatted MongoDB connection URI
  */
-export function normalizeMongoURI(uri: string, dbName: string = 'subscriptions'): string {
+export function normalizeMongoURI(uri: string, dbName: string = 'saas_db'): string {
   try {
     // Parse the URI to properly handle different URI formats
     const url = new URL(uri);
