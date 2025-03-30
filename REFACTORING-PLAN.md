@@ -5,7 +5,7 @@ This document outlines the refactoring plan to improve the codebase structure, e
 ## MongoDB URI Utilities Duplication
 
 - [x] **Consolidate URI handling functions**
-  - [x] Keep the comprehensive implementation in `src/utils/mongodb-uri.ts`
+  - [x] ~~Keep the comprehensive implementation in `src/utils/mongodb-uri.ts`~~ Merged into `mongodb-utils.ts`
   - [x] Remove duplicate `normalizeMongoURI` from `src/lib/db/mongodb.ts`
   - [x] Remove duplicate `normalizeMongoUri` from `src/lib/db/check-env.ts`
   - [x] Update imports to use the centralized utility
@@ -47,40 +47,44 @@ This document outlines the refactoring plan to improve the codebase structure, e
 
 ## Specific File Changes
 
-- [x] **MongoDB URI Utils**
-  - [x] Update `src/utils/mongodb-uri.ts` to be the definitive source
+- [x] **MongoDB Utils Consolidation**
+  - [x] ~~Update `src/utils/mongodb-uri.ts` to be the definitive source~~ Merged into `mongodb-utils.ts`
   - [x] Add any missing functionality from the duplicate implementations
+  - [x] **New:** Merged `mongodb-uri.ts` and `mongodb-utils.ts` into a single comprehensive utility file
 
 - [x] **Environment Configuration**
   - [x] Create `src/config/environment.ts` as the centralized environment config
   - [x] Document all required environment variables and default values
   - [x] Implement validation for required environment variables
+  - [x] **New:** Created a dedicated `check-env.ts` script in the config directory
 
 - [x] **Connection Module**
   - [x] Update `src/lib/db/index.ts` to use simplified connections only
   - [x] Document the connection approach in the file header
+  - [x] **New:** Updated `test-connection.ts` to use the simplified connection approach
 
 ## Additional Improvements
+
+- [x] **Documentation**
+  - [x] Add clear documentation for the database module
+  - [x] Document the preferred approach for database connections
+  - [x] Add inline documentation for complex functions
+  - [x] **New:** Created a comprehensive README.md in the db directory
 
 - [ ] **Type Safety**
   - [ ] Add proper TypeScript interfaces for all database operations
   - [ ] Ensure consistent error handling across database operations
 
-- [ ] **Documentation**
-  - [ ] Add clear documentation for the database module
-  - [ ] Document the preferred approach for database connections
-  - [ ] Add inline documentation for complex functions
-
 ## Progress Tracking
 
 | Category | Completed | Notes |
 |----------|-----------|-------|
-| MongoDB URI Utils | ✅ | Completed with enhanced functionality |
+| MongoDB URI Utils | ✅ | Merged `mongodb-uri.ts` and `mongodb-utils.ts` into a single comprehensive utility file |
 | Connection Management | ✅ | Simplified-connection is now the primary approach |
 | Empty/Unused Files | ✅ | Removed connection-manager.ts |
-| Environment Handling | ✅ | Created centralized config in environment.ts |
+| Environment Handling | ✅ | Created centralized config in environment.ts with dedicated check-env.ts script |
 | Logger Implementation | ✅ | Created unified logger module |
 | File Structure | ✅ | Created organized directory structure with proper separation |
 | Specific File Changes | ✅ | Updated all major files |
+| Documentation | ✅ | Added comprehensive documentation in src/lib/db/README.md |
 | Type Safety | ❌ | Still needs improvement |
-| Documentation | ❌ | Need comprehensive documentation |

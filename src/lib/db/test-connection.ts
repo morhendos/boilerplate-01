@@ -2,15 +2,22 @@
  * MongoDB Connection Test
  *
  * Tests connection to MongoDB server and provides detailed diagnostics.
+ * Uses the simplified connection approach which is the recommended
+ * method throughout the application.
  */
-import { connectToDatabase, disconnectFromDatabase } from "./mongodb";
+import mongoose from 'mongoose';
+import { getConnection } from './simplified-connection';
+import { createLogger } from '@/lib/logger';
+
+// Create a dedicated logger for the test
+const logger = createLogger('Connection Test');
 
 async function testConnection() {
-  console.log("Testing MongoDB connection...");
+  logger.info("Testing MongoDB connection...");
 
   try {
-    const connection = await connectToDatabase();
-    console.log("Connection successful!");
+    const connection = await getConnection();
+    logger.info("Connection successful!");
 
     // Get server info
     try {
@@ -24,20 +31,20 @@ async function testConnection() {
       const adminDb = connection.db.admin();
       const serverInfo = await adminDb.serverStatus();
 
-      console.log("\nServer information:");
-      console.log(`- MongoDB version: ${serverInfo.version}`);
-      console.log(
+      logger.info("\nServer information:");
+      logger.info(`- MongoDB version: ${serverInfo.version}`);
+      logger.info(
         `- Uptime: ${(serverInfo.uptime / 60 / 60).toFixed(2)} hours`
       );
-      console.log(
+      logger.info(
         `- Connections: ${serverInfo.connections.current} (current) / ${serverInfo.connections.available} (available)`
       );
 
       // List databases
       const dbInfo = await adminDb.listDatabases();
-      console.log("\nDatabases:");
+      logger.info("\nDatabases:");
       dbInfo.databases.forEach((db: any) => {
-        console.log(
+        logger.info(
           `- ${db.name} (${(db.sizeOnDisk / 1024 / 1024).toFixed(2)} MB)`
         );
       });
@@ -46,7 +53,7 @@ async function testConnection() {
       const dbName = process.env.MONGODB_DATABASE || "saas_db";
       const dbExists = dbInfo.databases.some((db: any) => db.name === dbName);
       if (!dbExists) {
-        console.log(
+        logger.info(
           `\nNote: The '${dbName}' database doesn't exist yet. It will be created when data is first inserted.`
         );
       } else {
@@ -54,23 +61,28 @@ async function testConnection() {
         const db = connection.db;
         const collections = await db.listCollections().toArray();
 
-        console.log(`\nCollections in '${dbName}' database:`);
+        logger.info(`\nCollections in '${dbName}' database:`);
         if (collections.length === 0) {
-          console.log("- No collections found");
+          logger.info("- No collections found");
         } else {
           collections.forEach((collection: any) => {
-            console.log(`- ${collection.name}`);
+            logger.info(`- ${collection.name}`);
           });
         }
       }
     } catch (error) {
-      console.warn("Could not retrieve detailed server information:", error);
+      logger.warn("Could not retrieve detailed server information:", error);
     }
 
-    await disconnectFromDatabase();
-    console.log("\nConnection test completed successfully!");
+    // Disconnect manually for the test
+    if (mongoose.connection.readyState !== 0) {
+      await mongoose.disconnect();
+      logger.info("Disconnected successfully");
+    }
+    
+    logger.info("\nConnection test completed successfully!");
   } catch (error) {
-    console.error("Connection failed:", error);
+    logger.error("Connection failed:", error);
   }
 }
 
