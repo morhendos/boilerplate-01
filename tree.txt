@@ -97,7 +97,6 @@ subscription-tracker/
 │   │   │   ├── ERROR_HANDLING.md
 │   │   │   ├── atlas-config.ts
 │   │   │   ├── config.ts
-│   │   │   ├── connection-manager.ts
 │   │   │   ├── error-handler.ts
 │   │   │   ├── index.ts
 │   │   │   ├── mock-connection.ts
