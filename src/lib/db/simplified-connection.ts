@@ -27,7 +27,7 @@ export async function getConnection(): Promise<mongoose.Connection> {
   }
   
   // Get MongoDB URI from environment
-  const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/subscriptions';
+  const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/saas_db';
   
   // Normalize the URI to ensure correct database name
   const normalizedUri = normalizeMongoUri(uri);
