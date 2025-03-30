@@ -40,7 +40,7 @@ async function testConnection() {
       });
       
       // Check if our database exists
-      const dbName = process.env.MONGODB_DATABASE || 'subscriptions';
+      const dbName = process.env.MONGODB_DATABASE || 'saas_db';
       const dbExists = dbInfo.databases.some((db: any) => db.name === dbName);
       if (!dbExists) {
         console.log(`\nNote: The '${dbName}' database doesn't exist yet. It will be created when data is first inserted.`);
