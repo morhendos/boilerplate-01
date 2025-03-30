@@ -6,6 +6,8 @@
  * the application.
  */
 
+import { logger } from '@/lib/logger';
+
 /**
  * Normalizes a MongoDB URI to ensure it has a valid database name
  * 
@@ -57,7 +59,7 @@ export function normalizeMongoURI(uri: string, dbName: string = 'saas_db'): stri
     return url.toString();
   } catch (error) {
     // If URL parsing fails, fall back to a more basic string manipulation
-    console.warn('Failed to parse MongoDB URI as URL, falling back to string manipulation');
+    logger.warn('Failed to parse MongoDB URI as URL, falling back to string manipulation');
     
     // Remove any existing database name and query parameters
     let baseUri = uri;
@@ -149,5 +151,28 @@ export function extractDatabaseName(uri: string): string | null {
     // If URI parsing fails, try string manipulation
     const match = uri.match(/\/([^/?]+)(\?|$)/);
     return match ? match[1] : null;
+  }
+}
+
+/**
+ * Checks if a URI is for a local MongoDB connection
+ * 
+ * @param uri MongoDB connection URI
+ * @returns True if the URI is for a local connection
+ */
+export function isLocalConnection(uri: string): boolean {
+  try {
+    const url = new URL(uri);
+    return url.hostname === 'localhost' || 
+           url.hostname === '127.0.0.1' || 
+           url.hostname === '0.0.0.0' ||
+           url.hostname.startsWith('192.168.') ||
+           url.hostname.startsWith('10.') ||
+           url.hostname === 'host.docker.internal';
+  } catch (error) {
+    // If URL parsing fails, do a simple string check
+    return uri.includes('localhost') || 
+           uri.includes('127.0.0.1') || 
+           uri.includes('0.0.0.0');
   }
 }
