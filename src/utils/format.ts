@@ -1,10 +1,34 @@
-import { Currency } from '@/types/subscriptions';
-import { CURRENCIES } from '@/lib/subscriptions/config/currencies';
+/**
+ * Formatting utilities for the application
+ */
 
+type Currency = string;
+
+// Currency formatting configuration
+const CURRENCIES: Record<Currency, {
+  locale: string;
+  decimalPlaces: number;
+  symbol: string;
+}> = {
+  'USD': { locale: 'en-US', decimalPlaces: 2, symbol: '$' },
+  'EUR': { locale: 'de-DE', decimalPlaces: 2, symbol: '€' },
+  'GBP': { locale: 'en-GB', decimalPlaces: 2, symbol: '£' },
+  'JPY': { locale: 'ja-JP', decimalPlaces: 0, symbol: '¥' },
+  'CAD': { locale: 'en-CA', decimalPlaces: 2, symbol: '$' },
+  'AUD': { locale: 'en-AU', decimalPlaces: 2, symbol: '$' },
+};
+
+/**
+ * Format a number as currency
+ * 
+ * @param amount - The amount to format
+ * @param currency - The currency code (USD, EUR, etc)
+ * @returns Formatted currency string
+ */
 export function formatCurrency(amount: number | null | undefined, currency: Currency | null | undefined): string {
-  // Default to EUR if no currency provided
-  const currencyCode = currency || 'EUR';
-  const config = CURRENCIES[currencyCode];
+  // Default to USD if no currency provided
+  const currencyCode = currency || 'USD';
+  const config = CURRENCIES[currencyCode] || CURRENCIES['USD'];
   
   // Default to 0 if no amount provided
   const value = typeof amount === 'number' ? amount : 0;
@@ -17,6 +41,12 @@ export function formatCurrency(amount: number | null | undefined, currency: Curr
   }).format(value);
 }
 
+/**
+ * Format a date string to a human readable format
+ * 
+ * @param dateStr - The date string to format
+ * @returns Formatted date string
+ */
 export function formatDate(dateStr: string) {
   try {
     if (!dateStr) return '';
@@ -33,16 +63,4 @@ export function formatDate(dateStr: string) {
     console.error('Error formatting date:', error);
     return '';
   }
-}
-
-export function convertToEur(amount: number, fromCurrency: Currency): number {
-  if (fromCurrency === 'EUR') return amount;
-  const rate = CURRENCIES[fromCurrency].exchangeRate;
-  return amount * rate;
-}
-
-export function convertFromEur(amount: number, toCurrency: Currency): number {
-  if (toCurrency === 'EUR') return amount;
-  const rate = CURRENCIES[toCurrency].exchangeRate;
-  return amount / rate;
 }
