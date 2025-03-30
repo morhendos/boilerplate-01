@@ -115,7 +115,7 @@ export function ensureEnvVars() {
   // Only apply fallbacks if variables are missing
   if (!process.env.MONGODB_URI) {
     console.log('[ENV DEBUG] MONGODB_URI is missing, applying fallback value');
-    const fallbackURI = 'mongodb://127.0.0.1:27017/subscriptions';
+    const fallbackURI = 'mongodb://127.0.0.1:27017/saas-app';
     process.env.MONGODB_URI = fallbackURI;
     console.log(`[ENV DEBUG] Set MONGODB_URI to: ${fallbackURI}`);
   } else {
@@ -124,8 +124,8 @@ export function ensureEnvVars() {
   
   if (!process.env.MONGODB_DATABASE) {
     console.log('[ENV DEBUG] MONGODB_DATABASE is missing, applying fallback value');
-    process.env.MONGODB_DATABASE = 'subscriptions';
-    console.log('[ENV DEBUG] Set MONGODB_DATABASE to: subscriptions');
+    process.env.MONGODB_DATABASE = 'saas-app';
+    console.log('[ENV DEBUG] Set MONGODB_DATABASE to: saas-app');
   }
   
   if (!process.env.NEXTAUTH_SECRET) {

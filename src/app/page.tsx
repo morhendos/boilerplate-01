@@ -17,8 +17,8 @@ export default function HomePage() {
     // Only redirect when we know the authentication status
     if (isClient) {
       if (status === 'authenticated') {
-        // Redirect to subscriptions if logged in
-        redirect('/subscriptions');
+        // Redirect to dashboard if logged in
+        redirect('/dashboard');
       } else if (status === 'unauthenticated') {
         // Redirect to login if not logged in
         redirect(AUTH_CONFIG.ROUTES.signIn);
