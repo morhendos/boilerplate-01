@@ -76,7 +76,7 @@ export function getMockConnection(logger?: Logger): Connection {
         ping: async () => ({ ok: 1 }),
         serverStatus: async () => ({ connections: { current: 0, available: 100 } })
       }),
-      databaseName: 'mock_subscriptions'
+      databaseName: 'mock_saas_db'
     },
 
     // Other methods that are commonly used
