@@ -51,7 +51,7 @@ const validateEnv = () => {
     // In development mode, use a fallback value as a last resort
     if (isDev) {
       console.warn('[MongoDB] Using fallback connection string for development');
-      process.env.MONGODB_URI = 'mongodb://127.0.0.1:27017/subscriptions';
+      process.env.MONGODB_URI = 'mongodb://127.0.0.1:27017/saas_db';
     } else {
       throw new Error('MONGODB_URI environment variable is not defined');
     }
@@ -63,7 +63,7 @@ const validateEnv = () => {
 };
 
 // Parse and normalize MongoDB URI to ensure it has a valid database name
-export function normalizeMongoURI(uri: string, dbName: string = 'subscriptions'): string {
+export function normalizeMongoURI(uri: string, dbName: string = 'saas_db'): string {
   try {
     // Parse the URI to properly handle different URI formats
     const url = new URL(uri);
@@ -245,7 +245,7 @@ async function connectWithRetry(retryCount = 0): Promise<mongoose.Connection> {
     validateEnv();
 
     const uri = process.env.MONGODB_URI as string;
-    const dbName = process.env.MONGODB_DATABASE || 'subscriptions';
+    const dbName = process.env.MONGODB_DATABASE || 'saas_db';
     
     // Normalize the URI to ensure it has a valid database name
     const normalizedUri = normalizeMongoURI(uri, dbName);
