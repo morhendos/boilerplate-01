@@ -1,4 +1,4 @@
-saas-boilerplate/
+subscription-tracker/
 ├── CLEANUP.md
 ├── README.md
 ├── docs
