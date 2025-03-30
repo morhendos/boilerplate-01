@@ -2,7 +2,6 @@
 
 import { Component, ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
-import { StorageError } from '@/lib/storage/types';
 
 interface Props {
   children: ReactNode;
@@ -13,6 +12,14 @@ interface Props {
 interface State {
   hasError: boolean;
   error: Error | null;
+}
+
+// Define a simple error class to replace StorageError
+class DatabaseError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'DatabaseError';
+  }
 }
 
 export class DatabaseErrorBoundary extends Component<Props, State> {
@@ -53,12 +60,16 @@ export class DatabaseErrorBoundary extends Component<Props, State> {
       }
 
       const error = this.state.error;
-      const isStorageError = error instanceof StorageError;
+      const isDatabaseError = error instanceof DatabaseError || 
+                              error?.name?.includes('Mongo') || 
+                              error?.name?.includes('Database') ||
+                              error?.message?.includes('database') ||
+                              error?.message?.includes('mongo');
       
       return (
         <div className="p-4 rounded-lg bg-red-50 dark:bg-red-900/10 text-red-900 dark:text-red-200">
           <h3 className="text-lg font-semibold mb-2">
-            {isStorageError ? 'Database Error' : 'Something went wrong'}
+            {isDatabaseError ? 'Database Error' : 'Something went wrong'}
           </h3>
           <p className="text-sm mb-4 text-red-800 dark:text-red-300">
             {error?.message || 'An error occurred while accessing the database.'}
