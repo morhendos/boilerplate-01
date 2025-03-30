@@ -5,7 +5,10 @@
  * for the rest of the application to use.
  */
 
-// Export connection manager
+// Export simplified connection utilities - our preferred approach
+export * from './simplified-connection';
+
+// Export connection manager for backward compatibility
 export { default as MongoConnectionManager } from './connection-manager';
 
 // Export database operations
@@ -21,6 +24,7 @@ export { Connection } from 'mongoose';
 // For backward compatibility with existing code
 import { MongoConnectionManager } from './connection-manager';
 import { ConsoleLogger } from './connection-manager';
+import { getConnection as getSimplifiedConnection } from './simplified-connection';
 
 /**
  * Get a MongoDB connection (legacy method for compatibility)
@@ -29,6 +33,12 @@ import { ConsoleLogger } from './connection-manager';
  * @returns A Promise resolving to a Connection
  */
 export const getConnection = async (options: any = {}) => {
+  // Prefer the simplified connection approach for better reliability
+  if (!options.direct && !options.forceLegacy) {
+    return getSimplifiedConnection();
+  }
+  
+  // Fall back to connection manager if specifically requested
   const manager = MongoConnectionManager.getInstance();
   return manager.getConnection(options);
 };
