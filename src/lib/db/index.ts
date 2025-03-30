@@ -3,6 +3,11 @@
  * 
  * Serves as the entry point for database operations, exposing a clean API
  * for the rest of the application to use.
+ * 
+ * Connection Strategy:
+ * This module uses the simplified-connection.ts module as the primary means
+ * of connecting to MongoDB. This approach ensures a single, reliable connection
+ * is maintained throughout the application's lifetime.
  */
 
 // Import mongoose for direct access
@@ -19,24 +24,11 @@ export * from './unified-error-handler';
 // Re-export useful types
 export { Connection } from 'mongoose';
 
-// Define a simple logger class for backward compatibility
-export class ConsoleLogger {
-  debug(message: string, ...args: any[]): void {
-    console.debug(message, ...args);
-  }
-  
-  info(message: string, ...args: any[]): void {
-    console.info(message, ...args);
-  }
-  
-  warn(message: string, ...args: any[]): void {
-    console.warn(message, ...args);
-  }
-  
-  error(message: string, ...args: any[]): void {
-    console.error(message, ...args);
-  }
-}
+// Use the shared logger
+import { createLogger } from '@/lib/logger';
+
+// Database logger instance
+const dbLogger = createLogger('DB');
 
 /**
  * Get a MongoDB connection (simplified method)
@@ -57,44 +49,33 @@ export const disconnectAll = async () => {
   try {
     if (mongoose && mongoose.connection && mongoose.connection.readyState !== 0) {
       await mongoose.disconnect();
-      console.debug('[MongoDB] All connections closed');
+      dbLogger.info('All connections closed');
     }
   } catch (error) {
-    console.error('[MongoDB] Error disconnecting all connections:', error);
+    dbLogger.error('Error disconnecting all connections:', error);
   }
 };
 
 /**
- * Create a logger instance (for backward compatibility)
+ * Create a database model with proper error handling
  * 
- * @param prefix The prefix for log messages
- * @returns A logger instance
+ * @param name Model name
+ * @param schema Mongoose schema
+ * @returns A Mongoose model
  */
-export const createLogger = (prefix: string) => {
-  class PrefixedLogger extends ConsoleLogger {
-    prefix: string;
-    
-    constructor(prefix: string) {
-      super();
-      this.prefix = prefix;
+export function createModel<T>(name: string, schema: mongoose.Schema) {
+  try {
+    // Try to get the model if it's already registered
+    return mongoose.models[name] as mongoose.Model<T> || 
+      mongoose.model<T>(name, schema);
+  } catch (error: unknown) {
+    // If the model is already registered, return it
+    if (error instanceof Error && error.name === 'OverwriteModelError') {
+      return mongoose.model<T>(name);
     }
-
-    debug(message: string, ...args: any[]): void {
-      super.debug(`[${this.prefix}] ${message}`, ...args);
-    }
-    
-    info(message: string, ...args: any[]): void {
-      super.info(`[${this.prefix}] ${message}`, ...args);
-    }
-    
-    warn(message: string, ...args: any[]): void {
-      super.warn(`[${this.prefix}] ${message}`, ...args);
-    }
-    
-    error(message: string, ...args: any[]): void {
-      super.error(`[${this.prefix}] ${message}`, ...args);
-    }
+    throw error;
   }
-  
-  return new PrefixedLogger(prefix);
-};
+}
+
+// Export for backward compatibility
+export { createLogger };

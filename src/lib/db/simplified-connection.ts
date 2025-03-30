@@ -6,11 +6,15 @@
  */
 
 import mongoose from 'mongoose';
-import { normalizeMongoUri } from './check-env';
+import { normalizeMongoURI } from '@/utils/mongodb-uri';
+import { createLogger } from '@/lib/logger';
 
 // Global connection state
 let connection: mongoose.Connection | null = null;
 let connectionPromise: Promise<mongoose.Connection> | null = null;
+
+// Database logger instance
+const dbLogger = createLogger('DB');
 
 /**
  * Get a MongoDB connection, reusing an existing one if available
@@ -30,7 +34,7 @@ export async function getConnection(): Promise<mongoose.Connection> {
   const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/saas_db';
   
   // Normalize the URI to ensure correct database name
-  const normalizedUri = normalizeMongoUri(uri);
+  const normalizedUri = normalizeMongoURI(uri);
   
   // Start a new connection
   connectionPromise = mongoose.connect(normalizedUri)
@@ -38,23 +42,23 @@ export async function getConnection(): Promise<mongoose.Connection> {
       connection = mongoose.connection;
       
       // Log database name for debugging - use optional chaining to avoid TypeScript errors
-      console.log(`[DB] Connected to database: ${connection?.db?.databaseName || 'unknown'}`);
+      dbLogger.info(`Connected to database: ${connection?.db?.databaseName || 'unknown'}`);
       
       // Listen for disconnect events
       connection.on('disconnected', () => {
-        console.log('[DB] MongoDB disconnected');
+        dbLogger.warn('MongoDB disconnected');
         connection = null;
       });
       
       connection.on('error', (err) => {
-        console.error('[DB] MongoDB connection error:', err);
+        dbLogger.error('MongoDB connection error:', err);
         connection = null;
       });
       
       return connection;
     })
     .catch((err) => {
-      console.error('[DB] MongoDB connection error:', err);
+      dbLogger.error('MongoDB connection error:', err);
       connectionPromise = null;
       throw err;
     });
