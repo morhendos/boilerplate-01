@@ -68,9 +68,9 @@ export function createModel<T>(name: string, schema: mongoose.Schema) {
     // Try to get the model if it's already registered
     return mongoose.models[name] as mongoose.Model<T> || 
       mongoose.model<T>(name, schema);
-  } catch (error) {
+  } catch (error: unknown) {
     // If the model is already registered, return it
-    if (error.name === 'OverwriteModelError') {
+    if (error instanceof Error && error.name === 'OverwriteModelError') {
       return mongoose.model<T>(name);
     }
     throw error;
