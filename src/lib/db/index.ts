@@ -5,6 +5,9 @@
  * for the rest of the application to use.
  */
 
+// Import mongoose for direct access
+import mongoose from 'mongoose';
+
 // Export simplified connection utilities - our preferred approach
 import { withConnection, getConnection as getSimplifiedConnection, safeSerialize } from './simplified-connection';
 export { withConnection, getSimplifiedConnection, safeSerialize };
@@ -51,8 +54,13 @@ export const getConnection = async (options: any = {}) => {
  * @returns A Promise that resolves when disconnection is complete
  */
 export const disconnectAll = async () => {
-  if (typeof mongoose !== 'undefined' && mongoose.connection) {
-    return mongoose.connection.close();
+  try {
+    if (mongoose && mongoose.connection && mongoose.connection.readyState !== 0) {
+      await mongoose.disconnect();
+      console.debug('[MongoDB] All connections closed');
+    }
+  } catch (error) {
+    console.error('[MongoDB] Error disconnecting all connections:', error);
   }
 };
 
