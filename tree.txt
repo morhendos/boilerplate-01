@@ -1,4 +1,4 @@
-subscription-tracker/
+saas-boilerplate/
 ├── CLEANUP.md
 ├── README.md
 ├── docs
@@ -113,8 +113,7 @@ subscription-tracker/
 │   │   │   ├── SERVICE_PATTERN.md
 │   │   │   ├── auth-debug-service.ts
 │   │   │   ├── health-service.ts
-│   │   │   ├── storage-service.ts
-│   │   │   └── subscription-service.ts
+│   │   │   └── storage-service.ts
 │   │   └── utils.ts
 │   ├── middleware
 │   │   └── rate-limit.ts
