@@ -6,7 +6,6 @@
  */
 
 import { withErrorHandling } from '@/lib/db/unified-error-handler';
-import { MongoConnectionManager } from '@/lib/db/connection-manager';
 import { checkDatabaseHealth } from '@/lib/db/mongodb';
 import mongoose from 'mongoose';
 
@@ -44,25 +43,66 @@ export interface SystemHealthResponse extends HealthStatus {
 }
 
 /**
+ * Helper function to get human-readable connection state
+ */
+function getReadyStateDescription(readyState: number): string {
+  switch (readyState) {
+    case 0: return 'disconnected';
+    case 1: return 'connected';
+    case 2: return 'connecting';
+    case 3: return 'disconnecting';
+    case 99: return 'uninitialized';
+    default: return `unknown (${readyState})`;
+  }
+}
+
+/**
  * Get database health status
  * 
  * @returns Database health information
  */
 export async function getDatabaseHealth(): Promise<DatabaseHealthResponse> {
   return withErrorHandling(async () => {
-    // Get the connection manager singleton
-    const connectionManager = MongoConnectionManager.getInstance();
+    const startTime = Date.now();
+    const conn = mongoose.connection;
     
-    // Check connection health
-    const healthCheck = await connectionManager.checkHealth();
+    // Basic health check using mongoose connection
+    let status: 'healthy' | 'unhealthy' = 'unhealthy';
+    let details: any = { readyState: 'unknown' };
+    
+    if (conn && conn.readyState === 1) {
+      try {
+        // Check if we can ping the database
+        await conn.db.admin().ping();
+        status = 'healthy';
+        details = {
+          readyState: getReadyStateDescription(conn.readyState),
+          databaseName: conn.db.databaseName
+        };
+      } catch (error) {
+        status = 'unhealthy';
+        details = {
+          readyState: getReadyStateDescription(conn.readyState),
+          error: error instanceof Error ? error.message : String(error)
+        };
+      }
+    } else if (conn) {
+      details = {
+        readyState: getReadyStateDescription(conn.readyState),
+        message: 'Connection not ready'
+      };
+    }
+    
+    const latency = Date.now() - startTime;
     
     // Return health status with connection details
     return {
-      status: healthCheck.status,
+      status,
       connection: {
-        latency: healthCheck.latency,
-        readyState: healthCheck.details?.readyState || 'unknown',
+        latency,
+        readyState: details.readyState
       },
+      details,
       timestamp: new Date().toISOString(),
     };
   }, 'getDatabaseHealth');
