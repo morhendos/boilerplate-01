@@ -76,8 +76,6 @@ subscription-tracker/
 │   ├── config
 │   │   ├── database-config.ts
 │   │   └── database.ts
-│   ├── contexts
-│   │   └── DateContext.tsx
 │   ├── hooks
 │   │   ├── useLocalStorage.ts
 │   │   └── useTheme.ts
@@ -91,28 +89,23 @@ subscription-tracker/
 │   │   ├── db
 │   │   │   ├── ERROR_HANDLING.md
 │   │   │   ├── atlas-config.ts
-│   │   │   ├── auth-connection.ts
 │   │   │   ├── check-env.ts
 │   │   │   ├── config.ts
-│   │   │   ├── connection-fix.ts
 │   │   │   ├── connection-manager.ts
 │   │   │   ├── env-debug.ts
 │   │   │   ├── error-handler.ts
 │   │   │   ├── index.ts
 │   │   │   ├── mock-connection.ts
 │   │   │   ├── mongodb.ts
-│   │   │   ├── operations.ts
 │   │   │   ├── simplified-connection.ts
 │   │   │   ├── test-connection.ts
-│   │   │   ├── test.ts
 │   │   │   └── unified-error-handler.ts
 │   │   ├── monitoring
 │   │   │   └── index.ts
 │   │   ├── services
 │   │   │   ├── SERVICE_PATTERN.md
 │   │   │   ├── auth-debug-service.ts
-│   │   │   ├── health-service.ts
-│   │   │   └── storage-service.ts
+│   │   │   └── health-service.ts
 │   │   └── utils.ts
 │   ├── middleware
 │   │   └── rate-limit.ts
@@ -126,7 +119,6 @@ subscription-tracker/
 │   │   ├── next-auth.d.ts
 │   │   └── user.ts
 │   └── utils
-│       ├── dates.ts
 │       ├── format.ts
 │       ├── mongodb-uri.ts
 │       └── mongodb-utils.ts
